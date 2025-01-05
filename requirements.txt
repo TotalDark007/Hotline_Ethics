@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 flask
 flask-mail
 itsdangerous
@@ -11,3 +12,18 @@ pytest
 flake8
 email-validator
 python-dotenv
+=======
+flask
+flask-mail
+itsdangerous
+werkzeug
+flask-sqlalchemy
+flask-migrate
+sqlalchemy
+jinja2
+uuid
+pytest
+flake8
+email-validator
+python-dotenv
+>>>>>>> aefc85784daeffa9291e477352aee623ed26f549
