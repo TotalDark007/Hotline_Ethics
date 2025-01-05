@@ -1,10 +1,22 @@
-name: myenv  # Name of the Conda environment
+name: myenv  # You can name this environment as you like
 channels:
-  - conda-forge  # Use conda-forge for many Python packages
+  - conda-forge  # Preferred channel for Python and Flask-related packages
   - defaults
 dependencies:
   - python=3.10  # Specify the Python version
-  - flake8       # Linting tool
-  - pytest       # Testing framework
-  - other-package-1  # Add other required packages here
-  - other-package-2
+  - flask         # Flask core framework
+  - flask-mail    # For sending emails
+  - itsdangerous  # For secure URL serialization
+  - werkzeug      # For password hashing and utilities
+  - flask-sqlalchemy  # For database integration
+  - flask-migrate     # For database migrations
+  - sqlalchemy     # SQL database toolkit
+  - jinja2         # Template engine used by Flask
+  - uuid           # For generating unique IDs
+  - datetime       # For date and time handling
+  - pytest         # For testing
+  - flake8         # For linting
+  - pip            # To handle pip packages
+  - pip:
+      - email-validator  
+      - python-dotenv    
