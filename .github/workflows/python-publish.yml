@@ -13,22 +13,19 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Set up Miniconda
-      uses: goanpeca/setup-miniconda@v1
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
       with:
-        auto-update-conda: true
         python-version: "3.10"
-
-    - name: Create Conda Environment
-      run: |
-        conda create --name myenv python=3.10 --yes
-        conda activate myenv
 
     - name: Install Dependencies
       run: |
-        conda install --name myenv flask flask-mail itsdangerous werkzeug --yes
+        python -m venv myenv
+        source myenv/bin/activate
+        pip install --upgrade pip
+        pip install flask flask-mail itsdangerous werkzeug
 
     - name: Run Tests
       run: |
-        conda activate myenv
+        source myenv/bin/activate
         pytest
