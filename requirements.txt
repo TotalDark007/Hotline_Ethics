@@ -1,0 +1,13 @@
+flask
+flask-mail
+itsdangerous
+werkzeug
+flask-sqlalchemy
+flask-migrate
+sqlalchemy
+jinja2
+uuid
+pytest
+flake8
+email-validator
+python-dotenv
