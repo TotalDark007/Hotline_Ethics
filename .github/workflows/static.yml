@@ -35,8 +35,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Adjusted path to target the 'templates' and 'uploads' folder
-          path: 'templates'
+          # Upload all .html files in the templates directory and subdirectories
+          path: '**/*.html'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
