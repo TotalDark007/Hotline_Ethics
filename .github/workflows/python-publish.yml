@@ -28,4 +28,4 @@ jobs:
     - name: Run Tests
       run: |
         source myenv/bin/activate
-        pytest
+        pytest tests  # Specify the tests directory if needed
