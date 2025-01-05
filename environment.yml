@@ -1,0 +1,10 @@
+name: myenv  # Name of the Conda environment
+channels:
+  - conda-forge  # Use conda-forge for many Python packages
+  - defaults
+dependencies:
+  - python=3.10  # Specify the Python version
+  - flake8       # Linting tool
+  - pytest       # Testing framework
+  - other-package-1  # Add other required packages here
+  - other-package-2
