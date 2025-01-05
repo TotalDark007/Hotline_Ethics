@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whistleblowing Report System</title>
+    <style>
+        /* Navigation bar */
+        nav {
+            width: 100%;
+            background-color: #4CAF50;
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            margin: 15px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #333;
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            font-size: 1.1em;
+            margin-top: 15px;
+            color: #555;
+        }
+        input[type="text"], input[type="password"], input[type="email"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, textarea:focus, select:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 128, 0, 0.2);
+        }
+        button {
+            display: block;
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+        .result {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .result h2 {
+            color: #4CAF50;
+            font-size: 1.4em;
+        }
+        .result p {
+            color: #333;
+        }
+        .file-upload-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        .file-upload-label:hover {
+            background-color: #45a049;
+        }
+        .file-upload-input {
+            display: none;
+        }
+        .file-upload-name {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        .file-upload-name span {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav>
+    <a href="/" class="active">Home</a>
+    <a href="/login">Investigator Login</a>
+</nav>
+
+<div class="container">
+    <h1>Whistleblowing Report System</h1>
+
+    <!-- Report Submission Form -->
+    <div class="form-section">
+        <h2>Submit a Report</h2>
+        <form action="/submit" method="POST" enctype="multipart/form-data">
+            <label for="report_type">Report Type</label>
+            <select id="report_type" name="report_type" onchange="toggleAdditionalQuestions()" required>
+                <option value="">Select a Report Type</option>
+                <option value="Fraud">Fraud</option>
+                <option value="Harassment">Harassment</option>
+                <option value="Discrimination">Discrimination</option>
+                <option value="Safety_Violation">Safety Violation</option>
+                <option value="Conflict_of_Interest">Conflict of Interest</option>
+                <option value="Bribery">Bribery</option>
+                <option value="Environmental_Violation">Environmental Violation</option>
+                <option value="Mismanagement">Mismanagement</option>
+                <option value="Other">Other (Please specify in details)</option>
+            </select>
+
+            <!-- Harassment Questions -->
+            <div id="harassment-questions" class="additional-questions" style="display: none;">
+                <h3>Harassment Details</h3>
+
+                <!-- Type of Harassment -->
+                <label for="harassmentType">Type of Harassment</label>
+                <select name="harassmentType" id="harassmentType">
+                    <option value="" disabled selected>Select a Type of Harassment</option>
+                    <option value="verbal">Verbal Abuse</option>
+                    <option value="physical">Physical Harassment</option>
+                    <option value="sexual">Sexual Harassment</option>
+                    <option value="other">Other (Please specify)</option>
+                </select>
+
+                <!-- Frequency of Harassment -->
+                <label for="frequency">Frequency of Harassment</label>
+                <select name="frequency" id="frequency">
+                    <option value="" disabled selected>Select Frequency</option>
+                    <option value="once">Only once</option>
+                    <option value="occasionally">Occasionally</option>
+                    <option value="frequently">Frequently</option>
+                    <option value="daily">Daily</option>
+                </select>
+
+                <!-- Witnesses -->
+                <label for="witnesses">Were there any witnesses?</label>
+                <select name="witnesses" id="witnesses">
+                    <option value="" disabled selected>Select an option</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+
+                <!-- Previous Report -->
+                <label for="previousReport">Have you reported this incident before?</label>
+                <select name="previousReport" id="previousReport">
+                    <option value="" disabled selected>Select an option</option>
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                </select>
+
+                <div id="previous-report-details" style="display: none;">
+                    <label for="reportedTo">Who did you report it to?</label>
+                    <input type="text" name="reportedTo" id="reportedTo">
+                    
+                    <label for="previousResponse">What was the response to your previous report?</label>
+                    <textarea name="previousResponse" id="previousResponse" rows="3"></textarea>
+                </div>
+            </div>
+
+            <!-- Fraud Questions -->
+            <div id="fraud-questions" class="additional-questions" style="display: none;">
+                <h3>Fraud Details</h3>
+
+                <!-- Fraud Details -->
+                <label for="fraudDetails">What was the fraudulent activity?</label>
+                <textarea name="fraudDetails" id="fraudDetails" rows="3"></textarea>
+
+                <!-- Fraud Involved -->
+                <label for="fraudInvolved">Who was involved in the fraudulent activity?</label>
+                <input type="text" name="fraudInvolved" id="fraudInvolved">
+
+                <!-- Fraud Date -->
+                <label for="fraudDate">When did the fraudulent activity occur?</label>
+                <input type="text" name="fraudDate" id="fraudDate">
+            </div>
+
+            <!-- Discrimination Questions -->
+            <div id="discrimination-questions" class="additional-questions" style="display: none;">
+                <h3>Discrimination Details</h3>
+
+                <!-- Discrimination Details -->
+                <label for="discriminationDetails">What type of discrimination occurred?</label>
+                <textarea name="discriminationDetails" id="discriminationDetails" rows="3"></textarea>
+
+                <!-- Discrimination Basis -->
+                <label for="discriminationBasis">What was the basis of discrimination?</label>
+                <input type="text" name="discriminationBasis" id="discriminationBasis">
+            </div>
+
+            <!-- Safety Violation Questions -->
+            <div id="safety-violation-questions" class="additional-questions" style="display: none;">
+                <h3>Safety Violation Details</h3>
+
+                <!-- Safety Violation Details -->
+                <label for="safetyViolationDetails">What safety rule was violated?</label>
+                <textarea name="safetyViolationDetails" id="safetyViolationDetails" rows="3"></textarea>
+
+                <!-- Safety Violation Date -->
+                <label for="safetyViolationDate">When did the violation occur?</label>
+                <input type="text" name="safetyViolationDate" id="safetyViolationDate">
+            </div>
+
+            <!-- Conflict of Interest Questions -->
+            <div id="conflict-of-interest-questions" class="additional-questions" style="display: none;">
+                <h3>Conflict of Interest Details</h3>
+
+                <!-- Conflict Details -->
+                <label for="conflictDetails">What is the nature of the conflict of interest?</label>
+                <textarea name="conflictDetails" id="conflictDetails" rows="3"></textarea>
+
+                <!-- Conflict Involved -->
+                <label for="conflictInvolved">Who is involved in the conflict?</label>
+                <input type="text" name="conflictInvolved" id="conflictInvolved">
+            </div>
+
+            <!-- Bribery Questions -->
+            <div id="bribery-questions" class="additional-questions" style="display: none;">
+                <h3>Bribery Details</h3>
+
+                <!-- Bribery Details -->
+                <label for="briberyDetails">What form of bribery occurred?</label>
+                <textarea name="briberyDetails" id="briberyDetails" rows="3"></textarea>
+
+                <!-- Bribery Involved -->
+                <label for="briberyInvolved">Who offered or accepted the bribe?</label>
+                <input type="text" name="briberyInvolved" id="briberyInvolved">
+            </div>
+
+            <!-- Environmental Violation Questions -->
+            <div id="environmental-violation-questions" class="additional-questions" style="display: none;">
+                <h3>Environmental Violation Details</h3>
+
+                <!-- Environmental Violation Details -->
+                <label for="environmentViolationDetails">What environmental violation occurred?</label>
+                <textarea name="environmentViolationDetails" id="environmentViolationDetails" rows="3"></textarea>
+
+                <!-- Environmental Violation Date -->
+                <label for="environmentViolationDate">When did the violation occur?</label>
+                <input type="text" name="environmentViolationDate" id="environmentViolationDate">
+            </div>
+
+            <!-- Mismanagement Questions -->
+            <div id="mismanagement-questions" class="additional-questions" style="display: none;">
+                <h3>Mismanagement Details</h3>
+
+                <!-- Mismanagement Details -->
+                <label for="mismanagementDetails">What was mismanaged?</label>
+                <textarea name="mismanagementDetails" id="mismanagementDetails" rows="3"></textarea>
+
+                <!-- Mismanagement Responsible -->
+                <label for="mismanagementResponsible">Who was responsible for the mismanagement?</label>
+                <input type="text" name="mismanagementResponsible" id="mismanagementResponsible">
+            </div>
+
+            <!-- Other Questions -->
+            <div id="other-questions" class="additional-questions" style="display: none;">
+                <h3>Other Report Details</h3>
+
+                <!-- Other Details -->
+                <label for="otherDetails">Please specify the issue in detail:</label>
+                <textarea name="otherDetails" id="otherDetails" rows="3"></textarea>
+            </div>
+
+
+            <label for="report_details">Report Details (Required)</label>
+            <textarea id="report_details" name="report_details" rows="6" required placeholder="Provide details about the concern..."></textarea>
+
+            <!-- File Upload Section -->
+            <label for="file" class="file-upload-label">Attach Files (Optional)</label>
+            <input type="file" id="file" name="file" class="file-upload-input" onchange="displayFileName()">
+            <div id="file-label" class="file-label"></div> <!-- Area to display the file name -->
+
+            <label for="anonymous_contact">Anonymous Contact (Optional)</label>
+            <input type="email" id="anonymous_contact" name="anonymous_contact" placeholder="Personal email">
+
+            <label for="password">Password (Required)</label>
+            <input type="password" id="password" name="password" autocomplete="off" required placeholder="Set a password to secure your report">
+
+            <button type="submit">Submit Report</button>
+        </form>
+    </div>
+    <hr>
+
+    <!-- Access Report Form -->
+    <div class="form-section">
+        <h2>Access Your Report</h2>
+        <form action="/view_report" method="POST">
+            <label for="access_code">Enter Access Code</label>
+            <input type="text" id="access_code" name="access_code" required placeholder="Your Unique Access Code">
+
+            <label for="access_password">Enter Password</label>
+            <input type="password" id="access_password" name="password" autocomplete="off" required placeholder="Your Password to access the report">
+            
+
+            <button type="submit">Access Report</button>
+        </form>
+    </div>
+
+    <hr>
+
+</div>
+
+    <script>
+        function toggleAdditionalQuestions() {
+            // Hide all additional questions
+            var questionSections = document.querySelectorAll('.additional-questions');
+            questionSections.forEach(function(section) {
+                section.style.display = 'none';
+            });
+
+            var reportType = document.getElementById("report_type").value;
+
+            // Display the relevant questions based on the report type
+            if (reportType === "Harassment") {
+                document.getElementById("harassment-questions").style.display = "block";
+            } else if (reportType === "Fraud") {
+                document.getElementById("fraud-questions").style.display = "block";
+            } else if (reportType === "Discrimination") {
+                document.getElementById("discrimination-questions").style.display = "block";
+            } else if (reportType === "Safety_Violation") {
+                document.getElementById("safety-violation-questions").style.display = "block";
+            } else if (reportType === "Conflict_of_Interest") {
+                document.getElementById("conflict-of-interest-questions").style.display = "block";
+            } else if (reportType === "Bribery") {
+                document.getElementById("bribery-questions").style.display = "block";
+            } else if (reportType === "Environmental_Violation") {
+                document.getElementById("environmental-violation-questions").style.display = "block";
+            } else if (reportType === "Mismanagement") {
+                document.getElementById("mismanagement-questions").style.display = "block";
+            } else if (reportType === "Other") {
+                document.getElementById("other-questions").style.display = "block";
+            }
+        }
+
+        function displayFileName() {
+        var fileInput = document.getElementById('file');
+        var fileLabel = document.getElementById('file-label');
+        
+        // Check if the file is selected
+        if (fileInput.files.length > 0) {
+            // Display the selected file name
+            fileLabel.textContent = 'Selected File: ' + fileInput.files[0].name;
+        } else {
+            // Reset if no file is selected
+            fileLabel.textContent = '';
+        }
+    }
+    </script>
+<!-- Footer -->
+<footer>
+    <p>&copy; 2024 Report Management System | <a href="/privacy-policy">Privacy Policy</a></p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whistleblowing Report Submitted</title>
+    <style>
+        /* You can include the same styles from the main template here or link to the main stylesheet */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .result {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .result h2 {
+            color: #4CAF50;
+            font-size: 1.4em;
+        }
+        .result p {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Whistleblowing Report Submitted</h1>
+
+    <div class="result">
+        <h2>Your Report has been Submitted!</h2>
+        <p><strong>Access Code:</strong> {{ access_code }}</p>
+        <p>Use these credentials to access your report later and check for updates.</p>
+    </div>
+</div>
+
+<script>
+    // Redirect to the index page after 5 seconds
+    setTimeout(function() {
+        window.location.href = '/';  // This will redirect to the home page (index.html)
+    }, 60000);  // 60000 milliseconds (60 seconds) delay
+</script>
+
+</body>
+</html>

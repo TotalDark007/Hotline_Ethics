@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investigator Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Reset some basic styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            height: 100%;
+        }
+        /* Navigation Bar */
+        .navbar {
+            width: 100%;
+            background-color: #4CAF50;
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            margin: 0 15px;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        .navbar a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        /* Centering the form */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f7fc;
+        }
+
+        .login-form {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-form h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+
+        .form-group input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .form-group .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .form-group button:hover {
+            background-color: #45a049;
+        }
+
+        .form-group .forgot-password {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #4CAF50;
+        }
+
+        .form-group .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer styling */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #45a049;
+        }
+
+        /* For mobile responsiveness */
+        @media (max-width: 480px) {
+            .login-form {
+                padding: 20px;
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="/" class="active">Home</a>
+        <a href="/investigator_login">Investigator Login</a>
+    </div>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <div class="login-form">
+            <h2>Investigator Login</h2>
+
+            <!-- Login Form -->
+            <form action="/login" method="POST">
+                <!-- Email (used as username) -->
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="#" id="email" name="email" placeholder="Enter your email" required>
+                    <!-- Error message for invalid email -->
+                    {% if error_email %}
+                    <div class="error">{{ error_email }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <!-- Error message for invalid password -->
+                    {% if error_password %}
+                    <div class="error">{{ error_password }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Login Button -->
+                <div class="form-group">
+                    <button type="submit">Login</button>
+                </div>
+
+                <!-- Forgot Password Link -->
+                <div class="form-group">
+                    <a href="/reset_password" class="forgot-password">Forgot Password?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Report Management System | <a href="/privacy-policy">Privacy Policy</a></p>
+    </footer>
+
+</body>
+
+</html>

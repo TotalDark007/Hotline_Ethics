@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Details</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .report-info {
+            margin-bottom: 20px;
+        }
+        .report-info p {
+            font-size: 1.1em;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .report-info strong {
+            color: #333;
+        }
+        .report-info .label {
+            font-weight: bold;
+            color: #555;
+        }
+        .report-info .value {
+            color: #333;
+        }
+        .additional-info {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+        .additional-info p {
+            font-size: 1.1em;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .additional-info .label {
+            font-weight: bold;
+            color: #555;
+        }
+        .additional-info .value {
+            color: #333;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.2em;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Report Details</h1>
+
+    <div class="report-info">
+        <p><span class="label">Report ID:</span> <span class="value">{{ report.id }}</span></p>
+        <p><span class="label">Timestamp:</span> <span class="value">{{ report.timestamp }}</span></p>
+        <p><span class="label">Report Type:</span> <span class="value">{{ report.report_type }}</span></p>
+        <p><span class="label">Details:</span> <span class="value">{{ report.report_details }}</span></p>
+        <p><span class="label">Anonymous Contact:</span> <span class="value">{{ report.anonymous_contact or "Not provided" }}</span></p>
+    </div>
+
+    {% if report.report_type == 'Harassment' %}
+    <div class="additional-info">
+        <h2>Harassment Details</h2>
+        <p><span class="label">Harassment Type:</span> <span class="value">{{ report.harassment_type }}</span></p>
+        <p><span class="label">Frequency:</span> <span class="value">{{ report.harassment_frequent }}</span></p>
+        <p><span class="label">Witnesses:</span> <span class="value">{{ report.harassment_witnesses }}</span></p>
+        <p><span class="label">Previous Reports:</span> <span class="value">{{ report.harassment_previous_reports }}</span></p>
+        <p><span class="label">Person Reporting:</span> <span class="value">{{ report.harassment_reporting_person }}</span></p>
+        <p><span class="label">Response:</span> <span class="value">{{ report.harassment_response }}</span></p>
+        <p><span class="label">Additional Details:</span> <span class="value">{{ report.harassment_details }}</span></p>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Fraud' %}
+    <div class="additional-info">
+        <h2>Fraud Details</h2>
+        <p><span class="label">Fraud Details:</span> <span class="value">{{ report.fraud_details }}</span></p>
+        <p><span class="label">Involved Parties:</span> <span class="value">{{ report.fraud_involved }}</span></p>
+        <p><span class="label">Date of Incident:</span> <span class="value">{{ report.fraud_date }}</span></p>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Discrimination' %}
+    <div class="additional-info">
+        <h2>Discrimination Details</h2>
+        <p><span class="label">Discrimination Details:</span> <span class="value">{{ report.discrimination_details }}</span></p>
+        <p><span class="label">Basis of Discrimination:</span> <span class="value">{{ report.discrimination_basis }}</span></p>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Safety_Violation' %}
+    <div class="additional-info">
+        <h2>Safety Violation Details</h2>
+        <p><span class="label">Violation Details:</span> <span class="value">{{ report.safety_violation_details }}</span></p>
+        <p><span class="label">Date of Violation:</span> <span class="value">{{ report.safety_violation_date }}</span></p>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Conflict_of_Interest' %}
+    <div class="additional-info">
+        <h2>Conflict of Interest Details</h2>
+        <p><span class="label">Conflict Details:</span> <span class="value">{{ report.conflict_details }}</span></p>
+        <p><span class="label">Involved Parties:</span> <span class="value">{{ report.conflict_involved }}</span></p>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Bribery' %}
+    <div class="additional-info">
+        <h2>Bribery Details</h2>
+        <p><span class="label">Bribery Details:</span> <span class="value">{{ report.bribery_details }}</span></p>
+        <p><span class="label">Involved Parties:</span> <span class="value">{{ report.bribery_involved }}</span></p>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Environmental_Violation' %}
+    <div class="additional-info">
+        <h2>Environmental Violation Details</h2>
+        <p><span class="label">Violation Details:</span> <span class="value">{{ report.environment_violation_details }}</span></p>
+        <p><span class="label">Date of Violation:</span> <span class="value">{{ report.environment_violation_date }}</span></p>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Mismanagement' %}
+    <div class="additional-info">
+        <h2>Mismanagement Details</h2>
+        <p><span class="label">Mismanagement Details:</span> <span class="value">{{ report.mismanagement_details }}</span></p>
+        <p><span class="label">Responsible Parties:</span> <span class="value">{{ report.mismanagement_responsible }}</span></p>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Other' %}
+    <div class="additional-info">
+        <h2>Other Report Details</h2>
+        <p><span class="label">Issue Details:</span> <span class="value">{{ report.other_details }}</span></p>
+    </div>
+    {% endif %}
+
+    <a href="/" class="button">Back to Home</a>
+</div>
+
+</body>
+</html>
