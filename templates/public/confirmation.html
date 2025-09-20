@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,8 @@
         /* You can include the same styles from the main template here or link to the main stylesheet */
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
+            background: var(--bg);
+            color: var(--text);
             margin: 0;
             padding: 0;
         }
@@ -17,9 +18,9 @@
             max-width: 800px;
             margin: 40px auto;
             padding: 30px;
-            background-color: #fff;
+            background: var(--card);
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
         }
         h1 {
             text-align: center;
@@ -42,9 +43,10 @@
             color: #333;
         }
     </style>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
 <body>
-
+<div class="header"><strong>Report Submitted</strong></div>
 <div class="container">
     <h1>Whistleblowing Report Submitted</h1>
 
@@ -64,3 +66,5 @@
 
 </body>
 </html>
+
+

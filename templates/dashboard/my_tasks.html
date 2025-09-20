@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tasks</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        .header strong { letter-spacing: 0.3px; }
+    </style>
+    </head>
+<body>
+{% include 'partials/header.html' %}
+
+<div class="container">
+    {% include 'partials/flashes.html' %}
+    <form class="card filters" method="GET" action="{{ url_for('my_tasks') }}">
+        <input type="text" name="search" placeholder="Search by Report ID" value="{{ request.args.get('search', '') }}">
+        <select name="status" aria-label="Status filter">
+            <option value="">All Statuses</option>
+            <option value="New" {% if request.args.get('status') == 'New' %}selected{% endif %}>New</option>
+            <option value="Ongoing" {% if request.args.get('status') == 'Ongoing' %}selected{% endif %}>Ongoing</option>
+            <option value="Resolved" {% if request.args.get('status') == 'Resolved' %}selected{% endif %}>Resolved</option>
+        </select>
+        <select name="report_type" aria-label="Type filter">
+            <option value="">All Types</option>
+            <option value="Fraud" {% if request.args.get('report_type') == 'Fraud' %}selected{% endif %}>Fraud</option>
+            <option value="Harassment" {% if request.args.get('report_type') == 'Harassment' %}selected{% endif %}>Harassment</option>
+            <option value="Discrimination" {% if request.args.get('report_type') == 'Discrimination' %}selected{% endif %}>Discrimination</option>
+            <option value="Safety_Violation" {% if request.args.get('report_type') == 'Safety_Violation' %}selected{% endif %}>Safety Violation</option>
+            <option value="Conflict_of_Interest" {% if request.args.get('report_type') == 'Conflict_of_Interest' %}selected{% endif %}>Conflict of Interest</option>
+            <option value="Bribery" {% if request.args.get('report_type') == 'Bribery' %}selected{% endif %}>Bribery</option>
+            <option value="Environmental_Violation" {% if request.args.get('report_type') == 'Environmental_Violation' %}selected{% endif %}>Environmental Violation</option>
+            <option value="Mismanagement" {% if request.args.get('report_type') == 'Mismanagement' %}selected{% endif %}>Mismanagement</option>
+            <option value="Other" {% if request.args.get('report_type') == 'Other' %}selected{% endif %}>Other</option>
+        </select>
+        <select name="per_page" aria-label="Results per page">
+            {% set pp = request.args.get('per_page', '10') %}
+            <option value="10" {% if pp == '10' %}selected{% endif %}>10 / page</option>
+            <option value="25" {% if pp == '25' %}selected{% endif %}>25 / page</option>
+            <option value="50" {% if pp == '50' %}selected{% endif %}>50 / page</option>
+            <option value="100" {% if pp == '100' %}selected{% endif %}>100 / page</option>
+        </select>
+        <button class="btn primary" type="submit">Apply Filters</button>
+    </form>
+
+    <div class="card reports">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:100px" class="sortable" data-type="num">Report ID</th>
+                    <th class="sortable" data-type="text">Type</th>
+                    <th style="width:160px" class="sortable" data-type="status">Status</th>
+                    <th style="width:200px" class="sortable" data-type="date">Date Submitted</th>
+                    <th style="width:140px">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if reports %}
+                    {% for report in reports %}
+                        <tr>
+                            <td>{{ report.id }}</td>
+                            <td>{{ report.report_type|replace('_',' ') }}</td>
+                            <td>
+                                {% set st = (report.status or 'New').lower() %}
+                                <span class="status-chip {% if st == 'resolved' %}status-resolved{% elif st == 'ongoing' %}status-ongoing{% else %}status-new{% endif %}">{{ report.status }}</span>
+                            </td>
+                            <td>{{ report.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <a class="btn primary" href="{{ url_for('report_detail', report_id=report.id) }}">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="muted" style="text-align:center">No assigned reports.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        {% if pagination %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 8px;gap:12px;">
+            <div class="muted">
+                {% set start = (pagination.page - 1) * pagination.per_page + 1 %}
+                {% set end = (pagination.page - 1) * pagination.per_page + reports|length %}
+                Showing {{ start }} - {{ end }} of {{ pagination.total }}
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                {% if pagination.has_prev %}
+                    <a class="btn" href="{{ url_for('my_tasks', page=1, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), per_page=request.args.get('per_page', pagination.per_page)) }}">&laquo; First</a>
+                    <a class="btn" href="{{ url_for('my_tasks', page=pagination.prev_num, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), per_page=request.args.get('per_page', pagination.per_page)) }}">&lsaquo; Prev</a>
+                {% endif %}
+                <span class="muted">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+                {% if pagination.has_next %}
+                    <a class="btn" href="{{ url_for('my_tasks', page=pagination.next_num, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), per_page=request.args.get('per_page', pagination.per_page)) }}">Next &rsaquo;</a>
+                    <a class="btn" href="{{ url_for('my_tasks', page=pagination.pages, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), per_page=request.args.get('per_page', pagination.per_page)) }}">Last &raquo;</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+    <script src="{{ url_for("static", filename="js/sort.js") }}"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

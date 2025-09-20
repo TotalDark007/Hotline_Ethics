@@ -1,32 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whistleblowing Report System</title>
     <style>
-        /* Navigation bar */
-        nav {
-            width: 100%;
-            background-color: #4CAF50;
-            padding: 20px;
-            color: white;
-            text-align: center;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            margin: 15px;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
+            background: var(--bg);
+            color: var(--text);
             margin: 0;
             padding: 0;
         }
@@ -35,9 +17,9 @@
             max-width: 800px;
             margin: 40px auto;
             padding: 30px;
-            background-color: #fff;
+            background: var(--card);
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
         }
         h1 {
             text-align: center;
@@ -158,14 +140,13 @@
             color: #45a049;
         }
     </style>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
 <body>
 
-<!-- Navigation Bar -->
-<nav>
-    <a href="/" class="active">Home</a>
-    <a href="/login">Investigator Login</a>
-</nav>
+{% set active_page = 'home' %}
+{% include 'partials/public_header.html' %}
+{% include 'partials/flashes.html' %}
 
 <div class="container">
     <h1>Whistleblowing Report System</h1>
@@ -433,3 +414,11 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+

@@ -1,0 +1,12 @@
+﻿<header class="app-header app-header--public">
+  <div class="app-header__inner">
+    <a href="{{ url_for('index') }}" class="app-header__brand">Whistleblowing Portal</a>
+    <button class="app-header__toggle" onclick="document.getElementById('publicNavLinks').classList.toggle('open')" aria-label="Toggle navigation">&#9776;</button>
+
+    <nav id="publicNavLinks" class="app-header__nav">
+      <a href="{{ url_for('index') }}" class="{% if active_page == 'home' %}active{% endif %}">Report System</a>
+      <a href="{{ url_for('login') }}" class="{% if active_page == 'login' %}active{% endif %}">Investigator Login</a>
+    </nav>
+  </div>
+</header>
+

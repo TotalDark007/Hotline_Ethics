@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, send_from_directory
+﻿from flask import Flask, request, render_template, redirect, url_for, send_from_directory
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from models import Report
@@ -10,12 +10,22 @@ import os
 
 # Function to create the app
 def create_app():
-    app = Flask(__name__)
+    # Resolve paths relative to this file to avoid CWD issues
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    templates_path = os.path.join(base_dir, 'templates')
+    static_path = os.path.join(base_dir, 'static')
+    uploads_path = os.path.join(base_dir, 'uploads')
+
+    # Ensure Flask knows exactly where templates live
+    app = Flask(__name__, template_folder=templates_path, static_folder=static_path)
 
     # Configure app settings
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///reports.db'
+    # Use absolute path to the instance DB so migrations and app agree
+    instance_db_path = os.path.join(base_dir, 'instance', 'reports.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{instance_db_path}"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['UPLOAD_FOLDER'] = 'uploads'
+    # Use absolute path so uploads work regardless of CWD
+    app.config['UPLOAD_FOLDER'] = uploads_path
     app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif', 'pdf', 'txt', 'csv', 'docx'}
     app.config['SECRET_KEY'] = os.urandom(24)
 
@@ -26,6 +36,17 @@ def create_app():
     # Import and set up routes
     from routes import setup_routes
     setup_routes(app)
+    @app.after_request
+    def add_no_cache_headers(response):
+        # Prevent authenticated pages from being restored via back/forward cache
+        # Also discourage intermediary caching. Keep static assets cacheable.
+        if request.endpoint != 'static':
+            response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0, private'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
+            # Help proxies/browsers vary by auth state
+            response.headers['Vary'] = (response.headers.get('Vary', '') + ', Cookie').strip(', ')
+        return response
 
     return app
 
@@ -73,3 +94,4 @@ def get_recent_reports(status=None, limit=5):
 
 if __name__ == '__main__':
     app.run(debug=True)
+

@@ -1,0 +1,27 @@
+﻿<header class="app-header">
+  <div class="app-header__inner">
+    <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}" class="app-header__brand">Hotline Management Portal</a>
+    <button class="app-header__toggle" onclick="document.getElementById('appNavLinks').classList.toggle('open')" aria-label="Toggle navigation">&#9776;</button>
+
+    <nav id="appNavLinks" class="app-header__nav">
+      {% set role = (session.get('role') or '').lower() %}
+      {% if session.get('user_id') %}
+        <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
+        {% if role in ['admin'] %}
+          <a href="{{ url_for('reports') }}" class="{% if request.endpoint == 'reports' %}active{% endif %}">Reports</a>
+        {% endif %}
+        {% if role in ['admin','investigator'] %}
+          <a href="{{ url_for('my_tasks') }}" class="{% if request.endpoint == 'my_tasks' %}active{% endif %}">My Tasks</a>
+        {% endif %}
+        {% if role in ['admin'] %}
+          <a href="{{ url_for('manage_users') }}" class="{% if request.endpoint == 'manage_users' %}active{% endif %}">Users</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a>
+        <a href="{{ url_for('login') }}" class="{% if request.endpoint == 'login' %}active{% endif %}">Investigator Login</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+

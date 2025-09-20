@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -12,7 +12,8 @@
             margin: 0;
             padding: 0;
             font-family: 'Arial', sans-serif;
-            background-color: #f4f7fc;
+            background: var(--bg);
+            color: var(--text);
             height: 100%;
         }
         /* Navigation Bar */
@@ -44,15 +45,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f4f7fc;
+            min-height: 100vh;
+            background: var(--bg);
         }
 
         .login-form {
-            background-color: #ffffff;
+            background: var(--card);
             padding: 40px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
             width: 100%;
             max-width: 400px;
             text-align: center;
@@ -81,9 +82,11 @@
             padding: 12px;
             font-size: 16px;
             border-radius: 4px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border);
             box-sizing: border-box;
             margin-top: 5px;
+            background: var(--card);
+            color: var(--text);
         }
 
         .form-group input:focus {
@@ -100,7 +103,7 @@
         .form-group button {
             width: 100%;
             padding: 12px;
-            background-color: #4CAF50;
+            background: var(--brand);
             color: white;
             font-size: 18px;
             border: none;
@@ -149,15 +152,14 @@
             }
         }
     </style>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
 
 <body>
 
-    <!-- Navigation Bar -->
-    <div class="navbar">
-        <a href="/" class="active">Home</a>
-        <a href="/login">Investigator Login</a>
-    </div>
+{% set active_page = 'login' %}
+{% include 'partials/public_header.html' %}
+{% include 'partials/flashes.html' %}
 
     <!-- Login Container -->
     <div class="login-container">
@@ -169,7 +171,7 @@
                 <!-- Email (used as username) -->
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="#" id="email" name="email" placeholder="Enter your email" required>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
                     <!-- Error message for invalid email -->
                     {% if error_email %}
                     <div class="error">{{ error_email }}</div>
@@ -207,3 +209,6 @@
 </body>
 
 </html>
+
+
+

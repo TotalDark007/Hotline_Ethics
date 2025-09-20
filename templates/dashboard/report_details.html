@@ -1,0 +1,346 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Details</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+{% include 'partials/header.html' %}
+
+
+<div class="container">
+    {% include 'partials/flashes.html' %}
+    <div class="card">
+        <h2 class="page-title">Overview</h2>
+        <div class="detail-grid">
+            <div class="label">Report ID</div><div>{{ report.id }}</div>
+            <div class="label">Timestamp</div><div>{{ report.timestamp.strftime('%Y-%m-%d %H:%M') if report.timestamp else '-' }}</div>
+            <div class="label">Type</div><div>{{ report.report_type|replace('_',' ') }}</div>
+            <div class="label">Status</div>
+            <div>
+                {% set st = (report.status or 'New').lower() %}
+                <span class="status-chip {% if st == 'resolved' %}status-resolved{% elif st == 'ongoing' %}status-ongoing{% else %}status-new{% endif %}">{{ report.status or 'New' }}</span>
+            </div>
+            <div class="label">Access Code</div><div>{{ report.access_code }}</div>
+            <div class="label">Contact</div><div>{{ report.anonymous_contact or 'Not provided' }}</div>
+            <div class="label">Attachment</div>
+            <div>
+                {% if report.file_name %}
+                    <a href="{{ url_for('download_file', filename=report.file_name) }}" target="_blank">{{ report.file_name }}</a>
+                {% else %}
+                    <span class="muted">None</span>
+                {% endif %}
+            </div>
+            <div class="label">Assigned To</div>
+            <div>
+                {% if report.assigned_user %}
+                    {{ report.assigned_user.name }} ({{ report.assigned_user.role }})
+                {% else %}
+                    <span class="muted">Unassigned</span>
+                {% endif %}
+            </div>
+        </div>
+        {% if allowed_to_edit %}
+        <div style="margin-top:10px">
+            <button type="button" class="btn sm" onclick="var f=document.getElementById('overviewEditForm'); f.style.display = (f.style.display==='none'||!f.style.display)?'grid':'none';">Edit Overview</button>
+        </div>
+        <form id="overviewEditForm" method="POST" action="{{ url_for('report_detail', report_id=report.id) }}" class="detail-grid" style="grid-template-columns:160px 1fr; gap:10px; margin-top:10px; display:none">
+            <input type="hidden" name="action" value="update_overview">
+            <div class="label">Timestamp</div>
+            <div>
+                <input type="datetime-local" name="timestamp" value="{{ report.timestamp.strftime('%Y-%m-%dT%H:%M') if report.timestamp else '' }}">
+            </div>
+            <div class="label">Type</div>
+            <div>
+                <select name="report_type">
+                    {% set current_type = report.report_type or 'Other' %}
+                    {% for opt in ['Fraud','Harassment','Discrimination','Safety_Violation','Conflict_of_Interest','Bribery','Environmental_Violation','Mismanagement','Other'] %}
+                        <option value="{{ opt }}" {% if current_type == opt %}selected{% endif %}>{{ opt.replace('_',' ') }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="label">Status</div>
+            <div>
+                {% set cur_status = report.status or 'New' %}
+                <select name="status">
+                    {% for s in ['New','Ongoing','Resolved'] %}
+                        <option value="{{ s }}" {% if cur_status == s %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="label">Access Code</div>
+            <div>
+                <input type="text" name="access_code" value="{{ report.access_code }}" maxlength="100">
+            </div>
+            <div class="label">Contact</div>
+            <div>
+                <input type="text" name="anonymous_contact" value="{{ report.anonymous_contact or '' }}" maxlength="100" placeholder="Optional contact info">
+            </div>
+            <div class="label"></div>
+            <div>
+                <button type="submit" class="btn primary sm">Save</button>
+                <button type="button" class="btn ghost sm" onclick="document.getElementById('overviewEditForm').style.display='none'">Cancel</button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+
+    <div style="height:14px"></div>
+
+    <div class="card">
+        <h2 class="page-title">Details</h2>
+        <div class="muted">Full description</div>
+        <div style="white-space: pre-wrap; margin-top: 6px;">{{ report.report_details }}</div>
+    </div>
+
+    <div style="height:14px"></div>
+
+    <div class="card">
+        <h2 class="page-title">AI Insights</h2>
+        <div class="detail-grid" style="grid-template-columns: 160px 1fr;">
+            <div class="label">Suggested Category</div>
+            <div>
+                {% if suggested_type %}
+                    <span class="chip">{{ suggested_type.replace('_',' ') }}</span>
+                    {% if suggested_score >= 5 %}
+                        <span class="muted" style="margin-left:8px">Confidence: High</span>
+                    {% elif suggested_score >= 3 %}
+                        <span class="muted" style="margin-left:8px">Confidence: Medium</span>
+                    {% else %}
+                        <span class="muted" style="margin-left:8px">Confidence: Low</span>
+                    {% endif %}
+                    {% if allowed_to_edit %}
+                        <form method="POST" action="{{ url_for('report_detail', report_id=report.id) }}" style="display:inline-block; margin-left:8px">
+                            <input type="hidden" name="action" value="apply_suggested_type">
+                            <input type="hidden" name="suggested_type" value="{{ suggested_type }}">
+                            <button type="submit" class="btn sm">Apply</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <span class="muted">No strong suggestion</span>
+                {% endif %}
+            </div>
+        </div>
+        <div style="margin-top:10px"></div>
+        <div>
+            <div class="muted" style="margin-bottom:6px">Similar Reports</div>
+            {% if similar_reports %}
+            <div class="reports table-compact">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:100px">Score</th>
+                            <th style="width:120px">Report ID</th>
+                            <th>Type</th>
+                            <th style="width:160px">Status</th>
+                            <th style="width:200px">Date</th>
+                            <th style="width:120px">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in similar_reports %}
+                        {% set st = (r.status or 'New').lower() %}
+                        <tr>
+                            <td><span class="chip gray">{{ (r.score * 100) | round(0) }}%</span></td>
+                            <td>{{ r.id }}</td>
+                            <td>{{ r.report_type|replace('_',' ') }}</td>
+                            <td>
+                                <span class="status-chip {% if st == 'resolved' %}status-resolved{% elif st == 'ongoing' %}status-ongoing{% else %}status-new{% endif %}">{{ r.status }}</span>
+                            </td>
+                            <td>{{ r.timestamp }}</td>
+                            <td><a class="btn sm" href="{{ url_for('report_detail', report_id=r.id) }}">View</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <div class="muted">No similar reports found.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div style="height:14px"></div>
+
+    <div class="card">
+        <h2 class="page-title">Assignment</h2>
+        <div class="muted">Assign this report to an investigator or admin.</div>
+        <form method="POST" action="{{ url_for('report_detail', report_id=report.id) }}" class="filters" style="margin-top:12px">
+            <input type="hidden" name="action" value="assign">
+            <select name="assignee_id" aria-label="Assignee">
+                <option value="">Unassigned</option>
+                {% for u in assignable_users or [] %}
+                    <option value="{{ u.id }}" {% if report.assigned_user and report.assigned_user.id == u.id %}selected{% endif %}>
+                        {{ u.name }} ({{ u.role }})
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn primary">Save</button>
+        </form>
+    </div>
+
+    <div style="height:14px"></div>
+
+    <div class="card">
+        <h2 class="page-title">Investigation</h2>
+        {% if allowed_to_edit %}
+            <form method="POST" action="{{ url_for('report_detail', report_id=report.id) }}" class="filters" style="margin-top:12px; display:block">
+                <input type="hidden" name="action" value="save_investigation">
+                <div class="detail-grid" style="grid-template-columns: 160px 1fr;">
+                    <div class="label">Notes</div>
+                    <div>
+                        <textarea name="investigator_notes" rows="5" style="width:100%" placeholder="Add investigation notes...">{{ report.investigator_notes or '' }}</textarea>
+                    </div>
+                    <div class="label">Involved Parties</div>
+                    <div>
+                        <textarea name="involved_parties" rows="3" style="width:100%" placeholder="List people, departments, etc.">{{ report.involved_parties or '' }}</textarea>
+                    </div>
+                    <div class="label">Conclusion</div>
+                    <div>
+                        <textarea name="investigator_conclusion" rows="4" style="width:100%" placeholder="Final findings and recommendations.">{{ report.investigator_conclusion or '' }}</textarea>
+                    </div>
+                </div>
+                <div style="margin-top:12px">
+                    <button type="submit" class="btn primary">Save Investigation</button>
+                    {% if report.investigation_updated_at %}
+                        <span class="muted" style="margin-left:8px">Last updated {{ report.investigation_updated_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                    {% endif %}
+                </div>
+            </form>
+            {% if (report.status or '') != 'Resolved' %}
+            <form method="POST" action="{{ url_for('report_detail', report_id=report.id) }}" style="margin-top:8px">
+                <input type="hidden" name="action" value="close">
+                <button type="submit" class="btn danger" onclick="return confirm('Close this report?')">Close Case</button>
+            </form>
+            {% else %}
+            <form method="POST" action="{{ url_for('report_detail', report_id=report.id) }}" style="margin-top:8px">
+                <input type="hidden" name="action" value="reopen">
+                <button type="submit" class="btn" onclick="return confirm('Reopen this report?')">Reopen Case</button>
+            </form>
+            {% endif %}
+        {% else %}
+            <div class="detail-grid" style="grid-template-columns: 160px 1fr;">
+                <div class="label">Notes</div>
+                <div style="white-space: pre-wrap;">{{ report.investigator_notes or '-' }}</div>
+                <div class="label">Involved Parties</div>
+                <div style="white-space: pre-wrap;">{{ report.involved_parties or '-' }}</div>
+                <div class="label">Conclusion</div>
+                <div style="white-space: pre-wrap;">{{ report.investigator_conclusion or '-' }}</div>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if report.report_type == 'Harassment' %}
+    <div style="height:14px"></div>
+    <div class="card">
+        <h2 class="page-title">Harassment Details</h2>
+        <div class="detail-grid">
+            <div class="label">Type</div><div>{{ report.harassment_type or '-' }}</div>
+            <div class="label">Frequency</div><div>{{ report.harassment_frequent or '-' }}</div>
+            <div class="label">Witnesses</div><div>{{ report.harassment_witnesses or '-' }}</div>
+            <div class="label">Previous Reports</div><div>{{ report.harassment_previous_reports or '-' }}</div>
+            <div class="label">Reported To</div><div>{{ report.harassment_reporting_person or '-' }}</div>
+            <div class="label">Response</div><div>{{ report.harassment_response or '-' }}</div>
+            <div class="label">Additional</div><div>{{ report.harassment_details or '-' }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Fraud' %}
+    <div style="height:14px"></div>
+    <div class="card">
+        <h2 class="page-title">Fraud Details</h2>
+        <div class="detail-grid">
+            <div class="label">Details</div><div>{{ report.fraud_details or '-' }}</div>
+            <div class="label">Involved</div><div>{{ report.fraud_involved or '-' }}</div>
+            <div class="label">Incident Date</div><div>{{ report.fraud_date or '-' }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Discrimination' %}
+    <div style="height:14px"></div>
+    <div class="card">
+        <h2 class="page-title">Discrimination Details</h2>
+        <div class="detail-grid">
+            <div class="label">Details</div><div>{{ report.discrimination_details or '-' }}</div>
+            <div class="label">Basis</div><div>{{ report.discrimination_basis or '-' }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Safety_Violation' %}
+    <div style="height:14px"></div>
+    <div class="card">
+        <h2 class="page-title">Safety Violation</h2>
+        <div class="detail-grid">
+            <div class="label">Details</div><div>{{ report.safety_violation_details or '-' }}</div>
+            <div class="label">Date</div><div>{{ report.safety_violation_date or '-' }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Conflict_of_Interest' %}
+    <div style="height:14px"></div>
+    <div class="card">
+        <h2 class="page-title">Conflict of Interest</h2>
+        <div class="detail-grid">
+            <div class="label">Details</div><div>{{ report.conflict_details or '-' }}</div>
+            <div class="label">Involved</div><div>{{ report.conflict_involved or '-' }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Bribery' %}
+    <div style="height:14px"></div>
+    <div class="card">
+        <h2 class="page-title">Bribery</h2>
+        <div class="detail-grid">
+            <div class="label">Details</div><div>{{ report.bribery_details or '-' }}</div>
+            <div class="label">Involved</div><div>{{ report.bribery_involved or '-' }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Environmental_Violation' %}
+    <div style="height:14px"></div>
+    <div class="card">
+        <h2 class="page-title">Environmental Violation</h2>
+        <div class="detail-grid">
+            <div class="label">Details</div><div>{{ report.environment_violation_details or '-' }}</div>
+            <div class="label">Date</div><div>{{ report.environment_violation_date or '-' }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Mismanagement' %}
+    <div style="height:14px"></div>
+    <div class="card">
+        <h2 class="page-title">Mismanagement</h2>
+        <div class="detail-grid">
+            <div class="label">Details</div><div>{{ report.mismanagement_details or '-' }}</div>
+            <div class="label">Responsible</div><div>{{ report.mismanagement_responsible or '-' }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report.report_type == 'Other' %}
+    <div style="height:14px"></div>
+    <div class="card">
+        <h2 class="page-title">Other Details</h2>
+        <div>{{ report.other_details or '-' }}</div>
+    </div>
+    {% endif %}
+
+<a href="{{ url_for('reports') }}" class="back-link btn">Back to Reports</a>
+</div>
+
+</body>
+</html>
+
+
+
+
+

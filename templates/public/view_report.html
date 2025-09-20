@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,10 +9,10 @@
         /* General Styling */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f7f7f7;
+            background: var(--bg);
+            color: var(--text);
             margin: 0;
             padding: 0;
-            color: #333;
         }
 
         .container {
@@ -20,9 +20,9 @@
             max-width: 900px;
             margin: 40px auto;
             padding: 30px;
-            background-color: #fff;
+            background: var(--card);
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
             overflow: hidden;
             transition: all 0.3s ease;
         }
@@ -178,9 +178,11 @@
             }
         }
     </style>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
 
 <body>
+    <div class="header"><strong>Report Details</strong></div>
     <div class="container">
         <h1>Report Details</h1>
 
@@ -278,3 +280,4 @@
 </body>
 
 </html>
+
