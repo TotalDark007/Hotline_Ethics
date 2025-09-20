@@ -36,6 +36,15 @@
                 <option value="Mismanagement" {% if request.args.get('report_type') == 'Mismanagement' %}selected{% endif %}>Mismanagement</option>
                 <option value="Other" {% if request.args.get('report_type') == 'Other' %}selected{% endif %}>Other</option>
             </select>
+            <select name="assigned_user" aria-label="Assignee filter">
+                <option value="">All Assignees</option>
+                <option value="unassigned" {% if request.args.get('assigned_user', '') == 'unassigned' %}selected{% endif %}>Unassigned</option>
+                {% for user in assignable_users %}
+                    <option value="{{ user.id }}" {% if request.args.get('assigned_user', '') == user.id|string %}selected{% endif %}>{{ user.name }} ({{ user.role }})</option>
+                {% endfor %}
+            </select>
+            <input type="date" name="date_from" value="{{ request.args.get('date_from', '') }}" aria-label="Submitted from">
+            <input type="date" name="date_to" value="{{ request.args.get('date_to', '') }}" aria-label="Submitted to">
             <select name="per_page" aria-label="Results per page">
                 {% set pp = request.args.get('per_page', '10') %}
                 <option value="10" {% if pp == '10' %}selected{% endif %}>10 / page</option>
@@ -45,7 +54,7 @@
             </select>
             <button class="btn primary" type="submit">Apply Filters</button>
         </form>
-        <a class="btn" href="{{ url_for('export_reports', status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search','')) }}">Export CSV</a>
+        <a class="btn" href="{{ url_for('export_reports', status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), assigned_user=request.args.get('assigned_user',''), date_from=request.args.get('date_from',''), date_to=request.args.get('date_to','')) }}">Export CSV</a>
     </div>
     <!-- Reports Table -->
     <div class="card reports">
@@ -85,7 +94,7 @@
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="5" class="muted" style="text-align:center">No reports found.</td>
+                        <td colspan="6" class="muted" style="text-align:center">No reports found.</td>
                     </tr>
                 {% endif %}
             </tbody>
@@ -99,13 +108,13 @@
             </div>
             <div style="display:flex;gap:8px;align-items:center;">
                 {% if pagination.has_prev %}
-                    <a class="btn" href="{{ url_for('reports', page=1, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), per_page=request.args.get('per_page', pagination.per_page)) }}">&laquo; First</a>
-                    <a class="btn" href="{{ url_for('reports', page=pagination.prev_num, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), per_page=request.args.get('per_page', pagination.per_page)) }}">&lsaquo; Prev</a>
+                    <a class="btn" href="{{ url_for('reports', page=1, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), assigned_user=request.args.get('assigned_user',''), date_from=request.args.get('date_from',''), date_to=request.args.get('date_to',''), per_page=request.args.get('per_page', pagination.per_page)) }}">&laquo; First</a>
+                    <a class="btn" href="{{ url_for('reports', page=pagination.prev_num, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), assigned_user=request.args.get('assigned_user',''), date_from=request.args.get('date_from',''), date_to=request.args.get('date_to',''), per_page=request.args.get('per_page', pagination.per_page)) }}">&lsaquo; Prev</a>
                 {% endif %}
                 <span class="muted">Page {{ pagination.page }} of {{ pagination.pages }}</span>
                 {% if pagination.has_next %}
-                    <a class="btn" href="{{ url_for('reports', page=pagination.next_num, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), per_page=request.args.get('per_page', pagination.per_page)) }}">Next &rsaquo;</a>
-                    <a class="btn" href="{{ url_for('reports', page=pagination.pages, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), per_page=request.args.get('per_page', pagination.per_page)) }}">Last &raquo;</a>
+                    <a class="btn" href="{{ url_for('reports', page=pagination.next_num, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), assigned_user=request.args.get('assigned_user',''), date_from=request.args.get('date_from',''), date_to=request.args.get('date_to',''), per_page=request.args.get('per_page', pagination.per_page)) }}">Next &rsaquo;</a>
+                    <a class="btn" href="{{ url_for('reports', page=pagination.pages, status=request.args.get('status',''), report_type=request.args.get('report_type',''), search=request.args.get('search',''), assigned_user=request.args.get('assigned_user',''), date_from=request.args.get('date_from',''), date_to=request.args.get('date_to',''), per_page=request.args.get('per_page', pagination.per_page)) }}">Last &raquo;</a>
                 {% endif %}
             </div>
         </div>
@@ -115,18 +124,4 @@
     <script src="{{ url_for("static", filename="js/sort.js") }}"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

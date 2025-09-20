@@ -1,4 +1,4 @@
-﻿from flask import Flask, request, render_template, redirect, url_for, send_from_directory
+from flask import Flask, request, render_template, redirect, url_for, send_from_directory
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from models import Report
@@ -79,7 +79,7 @@ def view_report():
     if report and report.check_password(password):
         # If the report is found and password matches, show the report details
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], report.file_name) if report.file_name else None
-        return render_template('view_report.html', report=report, file_path=file_path)
+        return render_template('public/view_report.html', report=report, file_path=file_path)
     else:
         # If the report is not found or password doesn't match
         return "Invalid access code or password. Please try again.", 400
@@ -94,4 +94,5 @@ def get_recent_reports(status=None, limit=5):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 

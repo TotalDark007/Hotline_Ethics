@@ -9,7 +9,7 @@ import os
 import io
 import csv
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 
 # Set allowed file extensions
@@ -276,31 +276,55 @@ def setup_routes(app):
         status = request.args.get('status', '').strip()
         report_type = request.args.get('report_type', '').strip()
         search = request.args.get('search', '').strip()
+        assigned_user = request.args.get('assigned_user', '').strip()
+        date_from = request.args.get('date_from', '').strip()
+        date_to = request.args.get('date_to', '').strip()
 
         # Query reports with optional filters
         query = Report.query
         if status:
-            # Accept old synonyms from legacy UI
             smap = {'pending': 'New', 'investigating': 'Ongoing', 'completed': 'Resolved'}
             status_norm = smap.get(status, status)
             query = query.filter_by(status=status_norm)
         if report_type:
-            # Normalize common spacing to underscores
             rtype_norm = report_type.replace(' ', '_')
             query = query.filter_by(report_type=rtype_norm)
         if search:
             query = query.filter(Report.id == search)  # Search by Report ID
+        if assigned_user:
+            if assigned_user == 'unassigned':
+                query = query.filter(Report.assigned_user_id.is_(None))
+            else:
+                try:
+                    query = query.filter(Report.assigned_user_id == int(assigned_user))
+                except ValueError:
+                    pass
+        if date_from:
+            try:
+                start_dt = datetime.strptime(date_from, '%Y-%m-%d')
+                query = query.filter(Report.timestamp >= start_dt)
+            except ValueError:
+                pass
+        if date_to:
+            try:
+                end_dt = datetime.strptime(date_to, '%Y-%m-%d') + timedelta(days=1)
+                query = query.filter(Report.timestamp < end_dt)
+            except ValueError:
+                pass
 
         # Pagination (default 10 per page) and ordering
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
         pagination = query.order_by(Report.timestamp.desc()).paginate(page=page, per_page=per_page, error_out=False)
+        assignable_users = User.query.order_by(User.name.asc()).all()
 
         return render_template(
             'dashboard/reports.html',
             reports=pagination.items,
             pagination=pagination,
+            assignable_users=assignable_users,
         )
+
 
     @app.route('/reports/export', methods=['GET'])
     def export_reports():
@@ -311,6 +335,9 @@ def setup_routes(app):
         status = request.args.get('status', '').strip()
         report_type = request.args.get('report_type', '').strip()
         search = request.args.get('search', '').strip()
+        assigned_user = request.args.get('assigned_user', '').strip()
+        date_from = request.args.get('date_from', '').strip()
+        date_to = request.args.get('date_to', '').strip()
 
         query = Report.query
         if status:
@@ -322,14 +349,33 @@ def setup_routes(app):
             query = query.filter_by(report_type=rtype_norm)
         if search:
             query = query.filter(Report.id == search)
+        if assigned_user:
+            if assigned_user == 'unassigned':
+                query = query.filter(Report.assigned_user_id.is_(None))
+            else:
+                try:
+                    query = query.filter(Report.assigned_user_id == int(assigned_user))
+                except ValueError:
+                    pass
+        if date_from:
+            try:
+                start_dt = datetime.strptime(date_from, '%Y-%m-%d')
+                query = query.filter(Report.timestamp >= start_dt)
+            except ValueError:
+                pass
+        if date_to:
+            try:
+                end_dt = datetime.strptime(date_to, '%Y-%m-%d') + timedelta(days=1)
+                query = query.filter(Report.timestamp < end_dt)
+            except ValueError:
+                pass
 
         reports = query.order_by(Report.timestamp.desc()).all()
 
-        # Build CSV including ALL columns from the report table
+        # Build CSV including ALL columns from the report table, excluding sensitive fields
         output = io.StringIO()
         writer = csv.writer(output)
 
-        # Collect column names from the SQLAlchemy model table, excluding sensitive fields
         columns = [col.name for col in Report.__table__.columns if col.name != 'password_hash']
         writer.writerow(columns)
 
@@ -349,6 +395,7 @@ def setup_routes(app):
         resp.headers['Content-Type'] = 'text/csv'
         resp.headers['Content-Disposition'] = 'attachment; filename=reports.csv'
         return resp
+
     @app.route('/my-tasks', methods=['GET'])
     def my_tasks():
         # Require login
@@ -605,6 +652,12 @@ def setup_routes(app):
                 return "Your password has been reset successfully!"
 
         return render_template('public/reset_form.html')
+
+
+
+
+
+
 
 
 
