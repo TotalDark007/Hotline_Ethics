@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+{% include 'partials/public_header.html' %}
+
+<div class="container">
+    <h1>Privacy Policy</h1>
+    <p class="muted">Last updated: September 2025</p>
+
+    <section class="card" style="margin-bottom:20px">
+        <h2>Overview</h2>
+        <p>
+            This policy explains how the Whistleblowing Report System collects, uses, and protects
+            information submitted through the platform. By submitting a report or signing in as an investigator you agree
+            to the practices described below.
+        </p>
+    </section>
+
+    <section class="card" style="margin-bottom:20px">
+        <h2>What We Collect</h2>
+        <ul>
+            <li>Report details, supporting files, and optional contact information provided by reporters.</li>
+            <li>Account information for administrators and investigators (name, email, role).</li>
+            <li>Audit metadata such as timestamps, assignment history, and status changes.</li>
+        </ul>
+    </section>
+
+    <section class="card" style="margin-bottom:20px">
+        <h2>How We Use Your Information</h2>
+        <ul>
+            <li>Route and investigate reports responsibly.</li>
+            <li>Maintain an auditable history of case activity.</li>
+            <li>Notify authorized users about updates that require their attention.</li>
+        </ul>
+    </section>
+
+    <section class="card" style="margin-bottom:20px">
+        <h2>Data Security</h2>
+        <p>
+            Access to the dashboard is restricted to authenticated investigators and administrators.
+            All passwords are stored as secure hashes and file uploads are kept inside the protected
+            application directory. Regular reviews of access logs and assignments are required to
+            safeguard sensitive information.
+        </p>
+    </section>
+
+    <section class="card" style="margin-bottom:20px">
+        <h2>Your Choices</h2>
+        <ul>
+            <li>Reporters may submit anonymously; providing contact details is optional.</li>
+            <li>Investigators may request that reports be reassigned or removed according to internal policy.</li>
+            <li>Administrators can delete user accounts and uploaded attachments when retention requirements expire.</li>
+        </ul>
+    </section>
+
+    <section class="card" style="margin-bottom:20px">
+        <h2>Contact</h2>
+        <p>
+            Questions about this policy can be directed to your compliance or legal team. For technical
+            issues please use the contact methods supplied by your organization.
+        </p>
+    </section>
+
+    <a class="btn" href="{{ url_for('index') }}">Back to Home</a>
+</div>
+
+</body>
+</html>

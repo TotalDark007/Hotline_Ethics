@@ -261,6 +261,11 @@ def setup_routes(app):
             return redirect(url_for('dashboard'))  # Redirect to a dashboard or other page
 
         return render_template('public/login.html')
+
+
+    @app.route('/privacy-policy')
+    def privacy_policy():
+        return render_template('public/privacy_policy.html')
     
     @app.route('/logout')
     def logout():
@@ -652,6 +657,7 @@ def setup_routes(app):
                 return "Your password has been reset successfully!"
 
         return render_template('public/reset_form.html')
+
 
 
 
