@@ -16,6 +16,8 @@ class Report(db.Model):
     access_code = db.Column(db.String(100), unique=True, nullable=False)  # Unique access code for each report
     password_hash = db.Column(db.String(100), nullable=False)  # Hashed password for the report
     file_name = db.Column(db.String(255), nullable=True)  # Store the filename of the uploaded file
+    assigned_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    assigned_user = db.relationship('User', foreign_keys=[assigned_user_id])
 
     # Additional fields for harassment
     harassment_details = db.Column(db.String(1000), nullable=True)  # Detailed harassment incident description
@@ -50,6 +52,12 @@ class Report(db.Model):
     mismanagement_responsible = db.Column(db.String(255), nullable=True)
 
     other_details = db.Column(db.String(1000), nullable=True)
+
+    # Investigator workflow fields
+    investigator_notes = db.Column(db.Text, nullable=True)
+    involved_parties = db.Column(db.Text, nullable=True)
+    investigator_conclusion = db.Column(db.Text, nullable=True)
+    investigation_updated_at = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
         return f'<Report {self.id}>'

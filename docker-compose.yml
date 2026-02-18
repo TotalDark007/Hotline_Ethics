@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./instance:/app/instance  # Persist the SQLite database
+      - ./uploads:/app/uploads    # Persist uploaded files
+    environment:
+      - FLASK_ENV=development
+    command: sh -c "flask db upgrade && python app.py"

@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users</title>
+    <title>Edit User</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body {
+       body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
@@ -115,78 +115,40 @@
         .actions form button:hover {
             background-color: #c82333;
         }
-
     </style>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
 <body>
-
-    <!-- Sidebar -->
-    {% include 'stuffman/sidebar.html' %}
-    
-    <header>
-        <h1>Admin Dashboard</h1>
-    </header>
-
     <div class="container">
-        <h2>Manage Users</h2>
+<div class="header"><strong>Edit User</strong></div>
+        <h2>Edit User</h2>
 
-        <!-- User Creation Form -->
+        <!-- User Edit Form -->
         <form method="POST">
             <div class="form-group">
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name" value="{{ user.name }}" required>
             </div>
 
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" value="{{ user.email }}" required>
             </div>
 
             <div class="form-group">
                 <label for="role">Role:</label>
                 <select id="role" name="role" required>
-                    <option value="investigator">Investigator</option>
-                    <option value="admin">Admin</option>
+                    <option value="investigator" {% if user.role == 'investigator' %}selected{% endif %}>Investigator</option>
+                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-
-            <div class="form-group">
-                <button type="submit">Create User</button>
+                <button type="submit">Save Changes</button>
             </div>
         </form>
 
-        <h3>Existing Users</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.role }}</td>
-                    <td class="actions">
-                        <a href="{{ url_for('edit_user', user_id=user.id) }}">Edit</a>
-                        <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}" style="display:inline;">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
-
 </body>
 </html>
+
