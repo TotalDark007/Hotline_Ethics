@@ -1,4 +1,4 @@
-"# Hotline_Ethics
+# Hotline_Ethics
 
 A Flask-based ethics hotline reporting application.
 
